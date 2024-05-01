@@ -1,0 +1,29 @@
+---
+- name: Stop service and upload directory snapshot to S3
+  hosts: all
+  become: yes  # Ensuring you have the necessary privileges
+
+  vars_files:
+    - ../vars/all.yml  # Adjusted path to the variable file
+
+  tasks:
+    - name: Stop the service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: stopped
+
+    - name: Create a snapshot of the directory
+      ansible.builtin.archive:
+        path: "{{ directory_to_snapshot }}"
+        dest: "/tmp/{{ directory_to_snapshot | basename }}.tar.gz"
+        format: gz
+
+    - name: Upload the snapshot to S3
+      ansible.builtin.aws_s3:
+        bucket: "{{ s3_bucket }}"
+        object: "{{ s3_location }}/{{ directory_to_snapshot | basename }}.tar.gz"
+        src: "/tmp/{{ directory_to_snapshot | basename }}.tar.gz"
+        mode: put
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ aws_region }}"

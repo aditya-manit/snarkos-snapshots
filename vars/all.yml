@@ -1,0 +1,7 @@
+service_name: snarkos
+directory_to_snapshot: .aleo
+s3_bucket: your-s3-bucket-name
+s3_location: your/s3/directory/location
+aws_access_key: your-aws-access-key
+aws_secret_key: your-aws-secret-key
+aws_region: your-aws-region
